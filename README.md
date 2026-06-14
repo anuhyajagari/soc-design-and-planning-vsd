@@ -127,7 +127,7 @@ package require openlane 1.0.2
 ```
 prep -design picorv32a
 ```
-![Design preparation complete](images/02_design_prep.png)
+02_design_prep.png
 
 
 #### Running Synthesis
