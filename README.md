@@ -120,14 +120,14 @@ make mount
 ./flow.tcl -interactive
 package require openlane 1.0.2
 ```
-
+![OpenLANE invoked in interactive mode](images/01_openlane_invoked.png)
 
 #### Preparing the Design
 
 ```
 prep -design picorv32a
 ```
-
+![Design preparation complete](images/02_design_prep.png)
 
 
 #### Running Synthesis
@@ -135,7 +135,9 @@ prep -design picorv32a
 ```
 run_synthesis
 ```
+![Synthesis completed - part 1](images/03_synthesis_complete1.png)
 
+![Synthesis completed - part 2](images/03_synthesis_complete2.png)
 
 
 #### Flop Ratio Calculation
