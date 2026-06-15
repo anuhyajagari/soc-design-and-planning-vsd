@@ -192,22 +192,20 @@ make mount
 ./flow.tcl -interactive
 package require openlane 1.0.2
 ```
-![OpenLANE invoked in interactive mode](images/01_openlane_invoked.png)
 
 #### Preparing the Design
 
 ```
 prep -design picorv32a
 ```
-![OpenLANE invoked in interactive mode](images/02_design_prep.png)
-
+![OpenLANE invoked in interactive mode](images/01_openlane_invoked.png)
 
 #### Running Synthesis
 
 ```
 run_synthesis
 ```
-![Synthesis completed - part 1](images/03_synthesis_complete1.png)
+![Synthesis completed - part 1](images/02_synthesis_complete1.png)
 
 ![Synthesis completed - part 2](images/03_synthesis_complete2.png)
 
