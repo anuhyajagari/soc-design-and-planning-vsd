@@ -406,13 +406,3 @@ run_placement
 
 ---
 
-## Key Takeaways
-
-- Floorplanning defines the physical structure of the chip.
-- Aspect Ratio controls the shape of the core.
-- Utilization Factor determines cell density.
-- Macros are placed before standard cells.
-- Decoupling capacitors help reduce power noise.
-- Power planning minimizes IR drop and ground bounce.
-- Placement arranges cells efficiently inside the core.
-- Standard cells form the foundation of digital ASIC design.
