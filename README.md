@@ -1,4 +1,5 @@
 ## Soc-Design-and-Planning-VSD
+
 RTL-to-GDSII Physical Design Flow using OpenLane and Sky130 PDK.
 
 ## Digital VLSI SoC Design and Planning — RTL to GDSII
@@ -7,9 +8,10 @@ This repository contains my notes, lab exercises, screenshots, and learnings fro
 
 ---
 
-## Day 1 – Introduction to Open-Source EDA, OpenLANE and Sky130 PDK
+## Day 1 — Introduction to Open-Source EDA, OpenLANE and Sky130 PDK
 
 ### Topics Covered
+
 * Introduction to ASIC Design Flow
 * Understanding Chip Components
 * RISC-V ISA Basics
@@ -21,9 +23,10 @@ This repository contains my notes, lab exercises, screenshots, and learnings fro
 
 ---
 
-## 1. Where is a Chip Located & Understanding its Components
+## Where is a Chip Located & Understanding its Components
 
 ### Chip Location
+
 Before diving into the internal architecture, it is essential to understand where the chip resides. A finalized integrated circuit (IC) or chip package is surface-mounted directly onto a **PCB (Printed Circuit Board)**. The PCB contains copper tracks that route electrical power and communication signals between the chip pins and other peripheral components on the system board.
 
 ### Inside the Chip
@@ -37,8 +40,9 @@ Before diving into the internal architecture, it is essential to understand wher
 | **IPs** | Reusable and pre-verified functional blocks. |
 | **Foundry** | Semiconductor company responsible for manufacturing the chip. |
 
+---
 
-## 2. RISC-V ISA: From Software to Physical Layout
+## RISC-V ISA: From Software to Physical Layout
 
 A software application eventually becomes hardware through several abstraction levels.
 
@@ -72,19 +76,24 @@ Physical Layout
 
 ---
 
-## 3. Components Required for Open-Source ASIC Design
+## Components Required for Open-Source ASIC Design
 
 To successfully execute an automated open-source digital design flow, three fundamental pillars must be present:
 
 ### 1. RTL Design
+
 The hardware description code (Verilog) defining the logic and behavior of the target design.
 
 ### 2. EDA Tools
-Open-source automated software suites used for synthesis, placement, routing, and physical sign-off verification. 
+
+Open-source automated software suites used for synthesis, placement, routing, and physical sign-off verification.
+
 * *Examples:* OpenLANE, OpenROAD, Yosys, Magic, Netgen.
 
 ### 3. PDK (Process Design Kit)
+
 The collection of files that links software tools to a real manufacturing foundry. It contains:
+
 * Design rules (DRC, LVS)
 * Device simulation models
 * Standard Cell Libraries (SCL)
@@ -93,76 +102,25 @@ The collection of files that links software tools to a real manufacturing foundr
 
 ---
 
-## 4. RTL to GDSII Flow
+## RTL to GDSII Flow
 
-### RTL
-
-Describes the functionality of the design using Verilog.
-
-### Synthesis
-
-Converts RTL into a gate-level netlist using standard cells.
-
-### Floorplanning
-
-- Defines chip dimensions
-- Places macros
-- Places I/O pins
-- Allocates routing resources
-
-### Power Planning
-
-Creates the Power Distribution Network (PDN).
-
-Purpose:
-- Deliver stable power
-- Reduce IR Drop
-- Improve reliability
-
-### Placement
-
-Places standard cells inside the core area.
-
-Goal:
-- Reduce wire length
-- Improve timing
-
-### Clock Tree Synthesis (CTS)
-
-Builds the clock distribution network.
-
-Goal:
-- Minimize clock skew
-- Balance clock arrival times
-
-### Routing
-
-Creates metal connections between all cells.
-
-Goal:
-- Establish complete physical connectivity
-
-### Sign-Off Checks
-
-#### STA (Static Timing Analysis)
-
-Verifies setup, hold, and timing requirements.
-
-#### DRC (Design Rule Check)
-
-Ensures the layout follows foundry design rules.
-
-#### LVS (Layout Versus Schematic)
-
-Verifies that the physical layout matches the logical netlist.
-
-### GDSII
-
-Final layout database sent to the foundry for fabrication.
+| Stage | Description |
+|---|---|
+| **RTL** | Describes functionality of the design using Verilog |
+| **Synthesis** | Converts RTL into a gate-level netlist using standard cells |
+| **Floorplanning** | Defines chip dimensions, places macros, I/O pins and routing resources |
+| **Power Planning** | Creates the PDN to deliver stable power, reduce IR Drop and improve reliability |
+| **Placement** | Places standard cells inside core area to reduce wire length and improve timing |
+| **CTS** | Builds clock distribution network to minimize skew and balance clock arrival times |
+| **Routing** | Creates metal connections between all cells |
+| **STA** | Verifies setup, hold and timing requirements |
+| **DRC** | Ensures layout follows foundry design rules |
+| **LVS** | Verifies physical layout matches the logical netlist |
+| **GDSII** | Final layout database sent to foundry for fabrication |
 
 ---
 
-## 5. OpenLANE ASIC Flow Tool Reference Stack
+## OpenLANE ASIC Flow Tool Reference Stack
 
 The automated pipeline executes the stages listed above using the following open-source tool implementations:
 
@@ -198,6 +156,7 @@ package require openlane 1.0.2
 ```
 prep -design picorv32a
 ```
+
 ![OpenLANE invoked in interactive mode](images/01_openlane_invoked.png)
 
 #### Running Synthesis
@@ -205,10 +164,10 @@ prep -design picorv32a
 ```
 run_synthesis
 ```
+
 ![Synthesis completed - part 1](images/02_synthesis_complete1.png)
 
 ![Synthesis completed - part 2](images/03_synthesis_complete2.png)
-
 
 #### Flop Ratio Calculation
 
@@ -221,3 +180,239 @@ Flop Ratio = Number of D Flip Flops / Total Number of Cells
            = 10.23%
 ```
 
+---
+
+## Day 2 — Floorplanning and Introduction to Library Cells
+
+### Topics Covered
+
+- Floorplanning Fundamentals
+- Core and Die Planning
+- Aspect Ratio and Utilization Factor
+- Macro Placement
+- Decoupling Capacitors
+- Power Planning
+- Pin Placement
+- Placement and Optimization
+- Standard Cell Design
+- Cell Characterization
+
+---
+
+## Floorplanning
+
+Floorplanning is the first physical design stage after synthesis. Its goal is to create an efficient physical structure for the chip before placing standard cells.
+
+### Main Steps
+
+- Define Die Size
+- Define Core Size
+- Place I/O Pins
+- Place Macros
+- Build the Power Distribution Network (PDN)
+- Create Placement Rows
+
+### Aspect Ratio and Utilization Factor
+
+**Aspect Ratio**
+
+```
+Aspect Ratio = Height / Width
+```
+
+- Aspect Ratio = 1 → Square Core
+- Aspect Ratio > 1 → Tall Core
+- Aspect Ratio < 1 → Wide Core
+
+**Utilization Factor**
+
+```
+Utilization Factor = Cell Area / Core Area
+```
+
+- High Utilization → Congestion and routing difficulties
+- Low Utilization → Wasted chip area
+
+A balanced utilization leaves enough space for routing and optimization.
+
+---
+
+## Macro Placement
+
+Macros are large pre-designed blocks such as:
+
+- SRAM
+- Processor Cores
+- PLLs
+
+These blocks are placed before standard cells and are therefore called **pre-placed cells**.
+
+Good macro placement helps reduce wirelength, congestion and timing issues, resulting in a more efficient layout.
+
+---
+
+## Decoupling Capacitors and Power Planning
+
+During switching, circuits may require a large amount of current instantly. This can cause voltage drops and power noise.
+
+Decoupling capacitors (Decaps) act as local charge reservoirs and supply current during sudden switching activity, helping maintain a stable supply voltage.
+
+The Power Distribution Network (PDN) distributes VDD and VSS throughout the chip using:
+
+- Power Rings
+- Vertical Straps
+- Horizontal Straps
+
+A well-designed PDN helps reduce:
+
+- IR Drop
+- Ground Bounce
+- Power Noise
+
+Upper metal layers are preferred because they are wider and thicker, resulting in lower resistance.
+
+---
+
+## Pin Placement
+
+Pins provide connections between the internal circuitry and the external world.
+
+Examples include:
+
+- Input Pins
+- Output Pins
+- Clock Pins
+- Reset Pins
+
+Proper pin placement helps reduce wirelength, improve routing and achieve better timing.
+
+---
+
+## Placement and Optimization
+
+Placement arranges all standard cells inside the placement rows created during floorplanning.
+
+### Placement Stages
+
+**Global Placement**
+
+- Finds an optimized location for each cell.
+
+**Detailed Placement**
+
+- Moves cells to legal locations and aligns them to placement rows.
+
+To improve timing, buffers may be inserted on long signal paths. Buffers regenerate signals and help reduce delay caused by wire resistance and capacitance.
+
+---
+
+## Standard Cell Design
+
+A standard cell is a reusable building block used during synthesis.
+
+Examples:
+
+- Inverter
+- NAND Gate
+- NOR Gate
+- Flip-Flop
+
+A standard cell is created through:
+
+- Circuit Design
+- Layout Design
+- DRC Verification
+- LVS Verification
+
+After verification, the cell becomes part of the Standard Cell Library.
+
+---
+
+## Cell Characterization
+
+After a cell layout is completed, its electrical behavior is measured.
+
+Characterization determines:
+
+- Delay
+- Power Consumption
+- Noise Characteristics
+- Timing Information
+
+The extracted information is stored in a **Liberty (.lib)** file, which is used by synthesis and timing analysis tools throughout the ASIC design flow.
+
+---
+
+## Lab
+
+### Running Floorplan
+
+```bash
+run_floorplan
+```
+
+![](images/05_Floorplan_run.png)
+
+### Inspecting the Generated DEF File
+
+After floorplanning is completed, the generated DEF file can be inspected using:
+
+```bash
+cd runs/<RUN_DIRECTORY>/results/floorplan/
+less picorv32a.def
+```
+
+![](images/06_floorplan.def.png)
+
+This DEF file contains floorplan information such as:
+
+- Core dimensions
+- Placement rows
+- Pin locations
+- Macro locations
+- Floorplan constraints
+
+---
+
+### Viewing the Floorplan in Magic
+
+To visualize the generated floorplan in Magic:
+
+```bash
+magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech \
+lef read ../../tmp/merged.nom.lef \
+def read picorv32a.def &
+```
+
+### Floorplan Layout
+
+![](images/06_Floorplan.png)
+
+---
+
+### Running Placement
+
+```bash
+run_placement
+```
+
+![](images/08_Placement_run.png)
+
+### Placement Layout
+
+![](images/09_Placement.png)
+
+![](images/10_Placement_in_detail.png)
+
+---
+
+## Key Takeaways
+
+- Floorplanning defines the physical structure of the chip.
+- Aspect Ratio controls the shape of the core.
+- Utilization Factor determines cell density.
+- Macros are placed before standard cells.
+- Decoupling capacitors help reduce power noise.
+- Power planning minimizes IR drop and ground bounce.
+- Placement arranges cells efficiently inside the core.
+- Standard cells form the foundation of digital ASIC design.
