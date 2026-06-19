@@ -406,3 +406,191 @@ run_placement
 
 ---
 
+## Day 3 — Design Library Cell using Magic Layout and ngspice Characterization
+
+### Topics Covered
+
+- Standard Cell Design Flow
+- Exploring a Custom Inverter Layout in Magic
+- CMOS Fabrication Process Overview
+- Layout Extraction (`.ext` → `.spice`)
+- SPICE Netlist Editing
+- ngspice Transient Simulation
+- Cell Characterization (Rise Time, Fall Time, Cell Rise Delay, Cell Fall Delay)
+- Magic DRC Lab Exercise
+
+---
+
+## Standard Cell Design — Big Picture
+
+Days 1 and 2 focused on chip-level design. Day 3 zooms into the **cell level** — studying a single standard cell (inverter) from layout all the way to characterization.
+
+```text
+Circuit Design
+      ↓
+Layout Design
+      ↓
+DRC Verification
+      ↓
+LVS Verification
+      ↓
+Extraction
+      ↓
+SPICE Simulation
+      ↓
+Characterization
+      ↓
+.lib Generation
+```
+
+---
+
+## Cloning the Custom Inverter Cell
+
+The `vsdstdcelldesign` repository provides a pre-built Sky130 inverter layout for hands-on practice.
+
+```bash
+git clone https://github.com/nickson-jose/vsdstdcelldesign
+```
+
+Before opening the layout, the Sky130 technology file must be copied into the same directory:
+
+```bash
+cp /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech .
+```
+
+---
+
+## Opening the Inverter Layout in Magic
+
+```bash
+magic -T sky130A.tech sky130_inv.mag
+```
+
+![Custom Inverter Layout opened in Magic](images/YOUR_INVERTER_LAYOUT_IMAGE.png)
+
+### Observations from the Layout
+
+- **PMOS** transistor sits in the **N-well** region (upper half of the cell)
+- **NMOS** transistor sits in the **P-substrate** region (lower half)
+- **VPWR** and **VGND** power rails are visible on Metal1
+- Input `A` and Output `Y` ports are accessible on the routing layers
+- No DRC violations were present in the original clean layout
+
+---
+
+## Identifying PMOS and NMOS in Magic
+
+By hovering over layers and using the `what` command in the Magic console, the transistors in the layout can be identified.
+
+![PMOS region identified in the inverter layout](images/YOUR_PMOS_IDENTIFY_IMAGE.png)
+
+![NMOS region identified in the inverter layout](images/YOUR_NMOS_IDENTIFY_IMAGE.png)
+
+---
+
+## Layout Extraction
+
+After verifying the layout, extraction is performed inside the Magic Tcl console to convert the physical geometry into an electrical circuit description.
+
+```tcl
+extract all
+ext2spice cthresh 0 rthresh 0
+ext2spice
+```
+
+This generates:
+- `sky130_inv.ext` — intermediate extraction file with parasitic data
+- `sky130_inv.spice` — SPICE netlist ready for simulation
+
+![Extraction commands run in Magic Tcl console](images/YOUR_EXTRACTION_COMMANDS_IMAGE.png)
+
+![Generated SPICE netlist file](images/YOUR_SPICE_FILE_IMAGE.png)
+
+---
+
+## Editing the SPICE Deck
+
+Before simulation, the generated SPICE file was edited to:
+- Include the correct PMOS model file (`pshort.lib`) and NMOS model file (`nshort.lib`)
+- Correct the model names for both transistors
+- Set supply voltage `VDD = 3.3V`
+- Add the transient simulation command
+
+![Edited SPICE deck before simulation](images/YOUR_EDITED_SPICE_IMAGE.png)
+
+---
+
+## SPICE Simulation using ngspice
+
+```bash
+ngspice sky130_inv.spice
+```
+
+Inside ngspice, the transient waveform is plotted:
+
+![](plotted wave)
+
+![ngspice launched with the inverter SPICE netlist](images/YOUR_NGSPICE_LAUNCH_IMAGE.png)
+
+### Transient Response Waveform
+
+![Transient output waveform — input A and output Y](images/YOUR_WAVEFORM_IMAGE.png)
+
+> A spike was observed in the initial waveform — fixed by adjusting the load capacitance `C3` value in the SPICE deck and re-running the simulation.
+
+![Updated waveform after fixing C3 capacitance](images/YOUR_FIXED_WAVEFORM_IMAGE.png)
+
+---
+
+## Cell Characterization
+
+The transient waveform was analyzed to extract four key timing parameters.
+
+> VDD = 3.3V → 20% = **0.66V** | 50% = **1.65V** | 80% = **2.64V**
+
+### Rise Transition
+
+Time taken by the output to rise from **20% to 80%** of VDD.
+
+![Zoomed waveform for Rise Transition measurement](images/YOUR_RISE_TRANSITION_IMAGE.png)
+
+Rise Transition = Time at 80% − Time at 20%
+= x.xxxx ns − x.xxxx ns
+= 0.0xx ns
+
+### Fall Transition
+
+Time taken by the output to fall from **80% to 20%** of VDD.
+
+![Zoomed waveform for Fall Transition measurement](images/YOUR_FALL_TRANSITION_IMAGE.png)
+
+Fall Transition = Time at 20% − Time at 80%
+= x.xxxx ns − x.xxxx ns
+= 0.0xx ns
+
+### Cell Rise Delay
+
+Time difference between **50% of input** (falling) and **50% of output** (rising).
+
+![Zoomed waveform for Cell Rise Delay measurement](images/YOUR_RISE_DELAY_IMAGE.png)
+
+Cell Rise Delay = Output 50% − Input 50%
+= x.xxxx ns − x.xxxx ns
+= 0.0xx ns
+
+These values feed into Liberty (`.lib`) files used by synthesis and STA tools throughout the ASIC flow.
+
+---
+
+## Lab — Magic DRC Exercise
+
+Magic's DRC engine was used to explore Sky130 design rule violations.
+
+![Magic layout with DRC violations highlighted](images/YOUR_DRC_IMAGE.png)
+
+The Sky130 `sky130A.tech` file was also studied and edited to understand how DRC rules are defined — covering poly width, metal spacing, and N-well constraints.
+
+![Tech file DRC rules being inspected](images/YOUR_TECH_FILE_IMAGE.png)
+
+---
