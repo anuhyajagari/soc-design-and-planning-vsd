@@ -529,7 +529,8 @@ ngspice sky130_inv.spice
 
 Inside ngspice, the transient waveform is plotted:
 
-![](generated_plot.png)
+![Generated wave](images/generated_plot.png)
+
 
 ## Cell Characterization
 
@@ -541,9 +542,9 @@ The transient waveform was analyzed to extract four key timing parameters.
 
 Time taken by the output to rise from **20% to 80%** of VDD.
 
-![Zoomed waveform for Rise Transition measurement](images/risetime at 20%.png)
+![Zoomed waveform for Rise Transition measurement](images/rise_time20.png)
 
-![Zoomed waveform for Rise Transition measurement](images/risetime at 80%.png)
+![Zoomed waveform for Rise Transition measurement](images/rise_time80.png)
 
 ![Zoomed waveform for Fall Transition measurement](images/risetime_values.png)
 
@@ -556,9 +557,9 @@ Rise Transition = Time at 80% − Time at 20%
 
 Time taken by the output to fall from **80% to 20%** of VDD.
 
-![Zoomed waveform for Fall Transition measurement](images/fall time at 20%.png)
+![Zoomed waveform for Fall Transition measurement](images/fall_time20.png)
 
-![Zoomed waveform for Fall Transition measurement](images/fall time at 80%.png)
+![Zoomed waveform for Fall Transition measurement](images/fall_time80.png)
 
 ![Zoomed waveform for Fall Transition measurement](images/falltime_values.png)
 
