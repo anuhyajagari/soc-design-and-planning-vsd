@@ -467,7 +467,7 @@ cp /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f5
 magic -T sky130A.tech sky130_inv.mag
 ```
 
-![Custom Inverter Layout opened in Magic](images/YOUR_INVERTER_LAYOUT_IMAGE.png)
+![Custom Inverter Layout opened in Magic](images/stdcelllayout.png)
 
 ### Observations from the Layout
 
@@ -483,9 +483,9 @@ magic -T sky130A.tech sky130_inv.mag
 
 By hovering over layers and using the `what` command in the Magic console, the transistors in the layout can be identified.
 
-![PMOS region identified in the inverter layout](images/YOUR_PMOS_IDENTIFY_IMAGE.png)
+![PMOS region identified in the inverter layout](images/stdcelllayout2.png)
 
-![NMOS region identified in the inverter layout](images/YOUR_NMOS_IDENTIFY_IMAGE.png)
+![NMOS region identified in the inverter layout](images/stdcelllayout3.png)
 
 ---
 
@@ -503,9 +503,9 @@ This generates:
 - `sky130_inv.ext` — intermediate extraction file with parasitic data
 - `sky130_inv.spice` — SPICE netlist ready for simulation
 
-![Extraction commands run in Magic Tcl console](images/YOUR_EXTRACTION_COMMANDS_IMAGE.png)
+![Extraction commands run in Magic Tcl console](images/stdcelllayout4.png)
 
-![Generated SPICE netlist file](images/YOUR_SPICE_FILE_IMAGE.png)
+![Generated SPICE netlist file](images/created_spicefile.png)
 
 ---
 
@@ -517,7 +517,7 @@ Before simulation, the generated SPICE file was edited to:
 - Set supply voltage `VDD = 3.3V`
 - Add the transient simulation command
 
-![Edited SPICE deck before simulation](images/YOUR_EDITED_SPICE_IMAGE.png)
+![Edited SPICE deck before simulation](images/edited_spicefile.png)
 
 ---
 
@@ -529,19 +529,7 @@ ngspice sky130_inv.spice
 
 Inside ngspice, the transient waveform is plotted:
 
-![](plotted wave)
-
-![ngspice launched with the inverter SPICE netlist](images/YOUR_NGSPICE_LAUNCH_IMAGE.png)
-
-### Transient Response Waveform
-
-![Transient output waveform — input A and output Y](images/YOUR_WAVEFORM_IMAGE.png)
-
-> A spike was observed in the initial waveform — fixed by adjusting the load capacitance `C3` value in the SPICE deck and re-running the simulation.
-
-![Updated waveform after fixing C3 capacitance](images/YOUR_FIXED_WAVEFORM_IMAGE.png)
-
----
+![](generated_plot.png)
 
 ## Cell Characterization
 
@@ -553,7 +541,12 @@ The transient waveform was analyzed to extract four key timing parameters.
 
 Time taken by the output to rise from **20% to 80%** of VDD.
 
-![Zoomed waveform for Rise Transition measurement](images/YOUR_RISE_TRANSITION_IMAGE.png)
+![Zoomed waveform for Rise Transition measurement](images/risetime at 20%.png)
+
+![Zoomed waveform for Rise Transition measurement](images/risetime at 80%.png)
+
+![Zoomed waveform for Fall Transition measurement](images/risetime_values.png)
+
 
 Rise Transition = Time at 80% − Time at 20%
 = x.xxxx ns − x.xxxx ns
@@ -563,7 +556,12 @@ Rise Transition = Time at 80% − Time at 20%
 
 Time taken by the output to fall from **80% to 20%** of VDD.
 
-![Zoomed waveform for Fall Transition measurement](images/YOUR_FALL_TRANSITION_IMAGE.png)
+![Zoomed waveform for Fall Transition measurement](images/fall time at 20%.png)
+
+![Zoomed waveform for Fall Transition measurement](images/fall time at 80%.png)
+
+![Zoomed waveform for Fall Transition measurement](images/falltime_values.png)
+
 
 Fall Transition = Time at 20% − Time at 80%
 = x.xxxx ns − x.xxxx ns
@@ -573,7 +571,10 @@ Fall Transition = Time at 20% − Time at 80%
 
 Time difference between **50% of input** (falling) and **50% of output** (rising).
 
-![Zoomed waveform for Cell Rise Delay measurement](images/YOUR_RISE_DELAY_IMAGE.png)
+![Zoomed waveform for Cell Rise Delay measurement](images/propdelay_graph.png)
+
+![Zoomed waveform for Cell Rise Delay measurement](images/propdelay_values.png)
+
 
 Cell Rise Delay = Output 50% − Input 50%
 = x.xxxx ns − x.xxxx ns
