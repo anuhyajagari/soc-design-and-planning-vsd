@@ -534,52 +534,31 @@ Inside ngspice, the transient waveform is plotted:
 
 ## Cell Characterization
 
-The transient waveform was analyzed to extract four key timing parameters.
+The transient waveform was analyzed to extract key timing parameters:
 
 > VDD = 3.3V → 20% = **0.66V** | 50% = **1.65V** | 80% = **2.64V**
 
 ### Rise Transition
-
 Time taken by the output to rise from **20% to 80%** of VDD.
+* **Value:** `0.064 ns`
 
 ![Zoomed waveform for Rise Transition measurement](images/rise_time20.png)
-
 ![Zoomed waveform for Rise Transition measurement](images/rise_time80.png)
-
 ![Zoomed waveform for Fall Transition measurement](images/risetime_values.png)
 
-
-Rise Transition = Time at 80% − Time at 20%
-= x.xxxx ns − x.xxxx ns
-= 0.0xx ns
-
 ### Fall Transition
-
 Time taken by the output to fall from **80% to 20%** of VDD.
+* **Value:** Obtained similarly by measuring the falling edge times.
 
 ![Zoomed waveform for Fall Transition measurement](images/fall_time20.png)
-
 ![Zoomed waveform for Fall Transition measurement](images/fall_time80.png)
-
 ![Zoomed waveform for Fall Transition measurement](images/falltime_values.png)
 
-
-Fall Transition = Time at 20% − Time at 80%
-= x.xxxx ns − x.xxxx ns
-= 0.0xx ns
-
 ### Cell Rise Delay
-
 Time difference between **50% of input** (falling) and **50% of output** (rising).
 
 ![Zoomed waveform for Cell Rise Delay measurement](images/propdelay_graph.png)
-
 ![Zoomed waveform for Cell Rise Delay measurement](images/propdelay_values.png)
-
-
-Cell Rise Delay = Output 50% − Input 50%
-= x.xxxx ns − x.xxxx ns
-= 0.0xx ns
 
 These values feed into Liberty (`.lib`) files used by synthesis and STA tools throughout the ASIC flow.
 
@@ -587,12 +566,12 @@ These values feed into Liberty (`.lib`) files used by synthesis and STA tools th
 
 ## Lab — Magic DRC Exercise
 
-Magic's DRC engine was used to explore Sky130 design rule violations.
+Using the Magic layout tool and the Sky130 technology rule file (`sky130A.tech`) to find and fix physical geometry violations.
 
-![Magic layout with DRC violations highlighted](images/YOUR_DRC_IMAGE.png)
-
-The Sky130 `sky130A.tech` file was also studied and edited to understand how DRC rules are defined — covering poly width, metal spacing, and N-well constraints.
-
-![Tech file DRC rules being inspected](images/YOUR_TECH_FILE_IMAGE.png)
-
----
+### 1. Fixing Poly Spacing Rules (`poly.9`)
+* Searched the `.tech` file for the `drc` section and located the `poly.9` rule definition.
+* Inspected the `/aliases` block and modified the missing spacing parameters to clear the layout errors.
+* Reloaded the updated technology rule deck and forced a fresh check inside Magic:
+  ```tcl
+  .techload sky130A.tech
+  drc check
