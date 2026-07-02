@@ -568,7 +568,11 @@ These values feed into Liberty (`.lib`) files used by synthesis and STA tools th
 
 Using the Magic layout tool and the Sky130 technology rule file (`sky130A.tech`) to find and fix physical geometry violations.
 
+![Screenshot of poly rules](images/drc_testfiles.download.png)
+
 ### Fixing the Incorrectly Implemented poly.9 Rule
+
+![Screenshot of poly rules](images/met3layout.png)
 
 The `poly.9` rule defines the minimum spacing between a poly resistor and plain poly. In the original `sky130A.tech` file this rule was missing — meaning Magic would not flag a DRC violation even when the spacing was less than the required 0.48µm.
 
@@ -578,13 +582,15 @@ Link to Sky130 Periphery rules: https://skywater-pdk.readthedocs.io/en/main/rule
 
 No DRC violation was flagged even though spacing was less than 0.48µm — confirming the rule was missing.
 
-![Incorrectly implemented poly.9 rule — no DRC violation](images/YOUR_poly9_nodrc.png)
+![Incorrectly implemented poly.9 rule — no DRC violation](images/2met3.png)
+
+![Incorrectly implemented poly.9 rule — no DRC violation](images/3met3.png)
 
 The `sky130A.tech` file was opened and the missing spacing rules for `poly.9` were added covering `xhrpoly`, `uhrpoly`, and `xpc` to `allpolynonres` at 480nm spacing.
 
-![Tech file edited to fix poly.9](images/YOUR_techfile_edit1.png)
+![Tech file edited to fix poly.9](images/4met3.png)
 
-![poly.9 spacing rule added in tech file](images/YOUR_techfile_edit2.png)
+![poly.9 spacing rule added in tech file](images/5met3.png)
 
 The updated tech file was reloaded inside Magic and a fresh DRC check was run:
 
@@ -596,6 +602,6 @@ drc why
 
 The DRC violation was now correctly flagged after the fix.
 
-![DRC violation correctly flagged after fix](images/YOUR_drc_fixed.png)
+![DRC violation correctly flagged after fix](images/finalmet3.png)
 
 ---
