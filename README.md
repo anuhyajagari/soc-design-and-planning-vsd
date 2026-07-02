@@ -605,3 +605,240 @@ The DRC violation was now correctly flagged after the fix.
 ![DRC violation correctly flagged after fix](images/finalmet3.png)
 
 ---
+
+## Day 4 — Pre-Layout Timing Analysis and Clock Tree Synthesis
+
+### Topics Covered
+
+- LEF File Guidelines for Standard Cell Ports
+- Static Timing Analysis (STA) Concepts
+- Pre-CTS Timing Analysis with OpenSTA
+- Clock Tree Synthesis (CTS) with TritonCTS
+- Post-CTS Timing Analysis with OpenROAD
+
+---
+
+## LEF Files and Standard Cell Port Guidelines
+
+Before a custom cell can be used inside OpenLANE, it needs a proper LEF file describing its physical boundary, pin locations, and metal layer information. Two rules must be satisfied:
+
+- All input and output ports must lie on the **intersection of horizontal and vertical routing tracks**
+- The cell **width must be an odd multiple** of the track pitch, and the height must be an odd multiple of the vertical track pitch
+
+---
+
+## Static Timing Analysis (STA) Concepts
+
+**Setup slack** = Data Required Time − Data Arrival Time (must be ≥ 0)
+
+Key sources of uncertainty in STA:
+
+- **OCV (On-Chip Variation)** — process, voltage, and temperature variation modelled using derate factors
+- **Clock Uncertainty** — jitter and skew margins added to timing paths
+- **CRPR (Clock Reconvergence Pessimism Removal)** — removes artificial pessimism when launch and capture paths share clock buffers
+
+---
+
+## Clock Tree Synthesis (CTS)
+
+CTS builds a balanced tree of clock buffers to distribute the clock signal across the chip with minimal skew. After CTS:
+
+- Hold timing must be re-checked since CTS inserts buffers that add real delay
+- Setup timing must be re-verified since clock paths have changed
+
+---
+
+## Lab — Custom Cell Integration and Pre-CTS Timing
+
+### Verifying Track Alignment for the Custom Inverter
+
+The tracks file for `sky130_fd_sc_hd` was inspected to get the routing track pitch values before setting the grid in Magic.
+
+Screenshot of tracks.info of sky130_fd_sc_hd
+
+![Screenshot of tracks.info](images/55_day4.1.png)
+
+The grid was set in Magic's tkcon window to match the routing tracks:
+
+```tcl
+help grid
+grid 0.46um 0.34um 0.23um 0.17um
+```
+
+![Grid set to match routing tracks](images/57_day4.4.png)
+
+![Custom inverter pins on routing track intersections](images/56_day4.2.png)
+
+![Inverter layout with grid overlay](images/58_day4.5.png)
+
+---
+
+### Generating the LEF File
+
+After verifying port placement and track alignment, the LEF file was generated from the layout using the tkcon window:
+
+```tcl
+lef write
+```
+
+![Command to write LEF from tkcon](images/59_day4.6.png)
+
+Screenshot of newly created lef file
+
+![Newly created LEF file](images/60_day4.7.png)
+
+---
+
+### Copying Files to the Design src Directory
+
+The newly generated LEF file and Liberty timing files were copied to the `picorv32a` src folder:
+
+```bash
+cp ~/Desktop/OpenLane/vsdstdcelldesign/sky130_vsdinv.lef ~/Desktop/OpenLane/designs/picorv32a/src/
+cp ~/Desktop/OpenLane/vsdstdcelldesign/libs/sky130_fd_sc_hd__typical.lib ~/Desktop/OpenLane/designs/picorv32a/src/
+cp ~/Desktop/OpenLane/vsdstdcelldesign/libs/sky130_fd_sc_hd__fast.lib ~/Desktop/OpenLane/designs/picorv32a/src/
+cp ~/Desktop/OpenLane/vsdstdcelldesign/libs/sky130_fd_sc_hd__slow.lib ~/Desktop/OpenLane/designs/picorv32a/src/
+```
+
+![Files copied to picorv32a src directory](images/61_day4.8.png)
+
+---
+
+### Editing config.tcl to Include the Custom Cell
+
+The `config.tcl` file was updated to point to the copied Liberty files and include the custom inverter LEF:
+
+```tcl
+set ::env(LIB_SYNTH)   "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__typical.lib"
+set ::env(LIB_FASTEST) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__fast.lib"
+set ::env(LIB_SLOWEST) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__slow.lib"
+set ::env(LIB_TYPICAL) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd__typical.lib"
+set ::env(EXTRA_LEFS)  [glob $::env(OPENLANE_ROOT)/designs/$::env(DESIGN_NAME)/src/*.lef]
+```
+
+![config.tcl updated](images/63_day4.10.png)
+
+![config.tcl verified](images/64_day4.11.png)
+
+---
+
+### Re-running Synthesis with Custom Cell Included
+
+The OpenLANE flow was re-launched and synthesis was re-run with the custom cell and improved strategy:
+
+```bash
+cd ~/Desktop/OpenLane
+make mount
+./flow.tcl -interactive
+package require openlane
+prep -design picorv32a -tag RUN_2026.06.15_17.18.27 -overwrite
+set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+add_lefs -src $lefs
+set ::env(SYNTH_STRATEGY) "DELAY 3"
+set ::env(SYNTH_SIZING) 1
+run_synthesis
+```
+
+![Synthesis completed with custom inverter merged](images/65_day4.15.png)
+
+![Synthesis statistics](images/66_day4.12.png)
+
+---
+
+### Running Floorplan and Placement
+
+```bash
+run_floorplan
+run_placement
+```
+
+![Floorplan and placement completed](images/67_day4.13.png)
+
+After placement, the layout was opened in Magic to verify the custom `sky130_vsdinv` cell was correctly placed and abutted with neighbouring standard cells:
+
+```bash
+cd ~/Desktop/OpenLane/designs/picorv32a/runs/RUN_2026.06.15_17.18.27/results/placement/
+magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech \
+lef read ../../tmp/merged.nom.lef \
+def read picorv32a.def &
+```
+
+Screenshot of placement def in Magic
+
+![Placement def in Magic](images/69_day4.17.png)
+
+Screenshot of custom inverter inserted in placement def with proper abutment
+
+![Custom inverter in placement with abutment](images/70_day4.18.png)
+
+The `expand` command was used in tkcon to view internal connectivity layers:
+
+```tcl
+expand
+```
+
+![Custom inverter expanded to show connectivity](images/71_day4.19.png)
+
+---
+
+### Pre-CTS Static Timing Analysis using OpenSTA
+
+A new `pre_sta.conf` file was created in the OpenLANE directory and a `my_base.sdc` file was created at `designs/picorv32a/src/`.
+
+Newly created pre_sta.conf for STA analysis in openlane directory
+
+![pre_sta.conf file](images/72_day4.20.png)
+
+Newly created my_base.sdc for STA analysis in openlane/designs/picorv32a/src directory based on the file openlane/scripts/base.sdc
+
+![my_base.sdc file](images/73_day4.22.png)
+
+STA was run from inside the OpenLANE Docker container:
+
+```bash
+sta pre_sta.conf
+```
+
+![Pre-CTS STA result](images/74_day4.21.png)
+
+![Pre-CTS STA timing path](images/75_day4.23.png)
+
+![Pre-CTS STA tns and wns](images/76_day4.24.png)
+
+---
+
+### Running Clock Tree Synthesis
+
+```bash
+run_cts
+```
+
+![CTS completed successfully](images/78_cts1.png)
+
+![CTS result](images/79_cts2.png)
+
+---
+
+### Post-CTS Timing Analysis using OpenROAD
+
+After CTS, timing was re-analysed using OpenROAD with propagated clocks:
+
+```bash
+openroad
+read_lef /openlane/designs/picorv32a/runs/RUN_2026.06.15_17.18.27/tmp/merged.nom.lef
+read_def /openlane/designs/picorv32a/runs/RUN_2026.06.15_17.18.27/results/cts/picorv32a.def
+write_db pico_cts.db
+read_db pico_cts.db
+read_verilog /openlane/designs/picorv32a/runs/RUN_2026.06.15_17.18.27/results/synthesis/picorv32a.v
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+link_design picorv32a
+read_sdc /openlane/designs/picorv32a/src/my_base.sdc
+set_propagated_clock [all_clocks]
+report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
+```
+
+![Post-CTS timing report](images/80_cts4.png)
+
+![Post-CTS setup path](images/81_cts5.png)
+
+![Post-CTS hold path](images/82_cts6.png)
