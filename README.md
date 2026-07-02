@@ -835,8 +835,11 @@ set_propagated_clock [all_clocks]
 report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
 ```
 
-![Post-CTS timing report](images/80_cts4.png)
+![Post-CTS timing report](images/openroad1.png)
 
-![Post-CTS setup path](images/81_cts5.png)
+![Post-CTS setup path](images/openroad2.png)
 
-![Post-CTS hold path](images/82_cts6.png)
+![Post-CTS hold path](images/openroad3.png)
+
+![Post-CTS hold path](images/openroad4.png)
+
