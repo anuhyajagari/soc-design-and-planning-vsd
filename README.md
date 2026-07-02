@@ -656,7 +656,7 @@ The tracks file for `sky130_fd_sc_hd` was inspected to get the routing track pit
 
 Screenshot of tracks.info of sky130_fd_sc_hd
 
-![Screenshot of tracks.info](images/55_day4.1.png)
+![Screenshot of tracks.info](images/1std.png)
 
 The grid was set in Magic's tkcon window to match the routing tracks:
 
@@ -665,11 +665,11 @@ help grid
 grid 0.46um 0.34um 0.23um 0.17um
 ```
 
-![Grid set to match routing tracks](images/57_day4.4.png)
+![Grid set to match routing tracks](images/2std.png)
 
-![Custom inverter pins on routing track intersections](images/56_day4.2.png)
+![Custom inverter pins on routing track intersections](images/3std.png)
 
-![Inverter layout with grid overlay](images/58_day4.5.png)
+![Inverter layout with grid overlay](images/4std.png)
 
 ---
 
@@ -681,11 +681,11 @@ After verifying port placement and track alignment, the LEF file was generated f
 lef write
 ```
 
-![Command to write LEF from tkcon](images/59_day4.6.png)
+![Command to write LEF from tkcon](images/5stdlefwrite.png)
 
 Screenshot of newly created lef file
 
-![Newly created LEF file](images/60_day4.7.png)
+![Newly created LEF file](images/6stdleffile.png)
 
 ---
 
@@ -700,7 +700,7 @@ cp ~/Desktop/OpenLane/vsdstdcelldesign/libs/sky130_fd_sc_hd__fast.lib ~/Desktop/
 cp ~/Desktop/OpenLane/vsdstdcelldesign/libs/sky130_fd_sc_hd__slow.lib ~/Desktop/OpenLane/designs/picorv32a/src/
 ```
 
-![Files copied to picorv32a src directory](images/61_day4.8.png)
+![Files copied to picorv32a src directory](images/7stdcopylef.png)
 
 ---
 
@@ -716,9 +716,9 @@ set ::env(LIB_TYPICAL) "$::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc
 set ::env(EXTRA_LEFS)  [glob $::env(OPENLANE_ROOT)/designs/$::env(DESIGN_NAME)/src/*.lef]
 ```
 
-![config.tcl updated](images/63_day4.10.png)
+![config.tcl updated](images/8stdeditedconfig.png)
 
-![config.tcl verified](images/64_day4.11.png)
+![config.tcl updated](images/beforestdsynth.png)
 
 ---
 
@@ -739,9 +739,7 @@ set ::env(SYNTH_SIZING) 1
 run_synthesis
 ```
 
-![Synthesis completed with custom inverter merged](images/65_day4.15.png)
-
-![Synthesis statistics](images/66_day4.12.png)
+![Synthesis completed with custom inverter merged](images/9stdrunsynth.png)
 
 ---
 
