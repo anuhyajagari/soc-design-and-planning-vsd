@@ -785,11 +785,11 @@ A new `pre_sta.conf` file was created in the OpenLANE directory and a `my_base.s
 
 Newly created pre_sta.conf for STA analysis in openlane directory
 
-![pre_sta.conf file](images/72_day4.20.png)
+![pre_sta.conf file](images/prestafileconf.png)
 
 Newly created my_base.sdc for STA analysis in openlane/designs/picorv32a/src directory based on the file openlane/scripts/base.sdc
 
-![my_base.sdc file](images/73_day4.22.png)
+![my_base.sdc file](mybasesdc.png)
 
 STA was run from inside the OpenLANE Docker container:
 
@@ -797,11 +797,11 @@ STA was run from inside the OpenLANE Docker container:
 sta pre_sta.conf
 ```
 
-![Pre-CTS STA result](images/74_day4.21.png)
+![Pre-CTS STA result](images/starun1.png)
 
-![Pre-CTS STA timing path](images/75_day4.23.png)
+![Pre-CTS STA timing path](images/starun1(2).png)
 
-![Pre-CTS STA tns and wns](images/76_day4.24.png)
+![Pre-CTS STA tns and wns](images/starun1(3).png)
 
 ---
 
@@ -811,9 +811,9 @@ sta pre_sta.conf
 run_cts
 ```
 
-![CTS completed successfully](images/78_cts1.png)
+![CTS completed successfully](cts1.png)
 
-![CTS result](images/79_cts2.png)
+![CTS result](images/cts2.png)
 
 ---
 
