@@ -767,7 +767,7 @@ Screenshot of placement def in Magic
 
 Screenshot of custom inverter inserted in placement def with proper abutment
 
-![Custom inverter in placement with abutment](images/.png)
+![Custom inverter in placement with abutment](images/vsdinvzoomin.png)
 
 The `expand` command was used in tkcon to view internal connectivity layers:
 
