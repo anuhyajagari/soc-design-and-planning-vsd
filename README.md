@@ -750,7 +750,7 @@ run_floorplan
 run_placement
 ```
 
-![Floorplan and placement completed](images/67_day4.13.png)
+![Floorplan and placement completed](images/10stdrunfppla.png)
 
 After placement, the layout was opened in Magic to verify the custom `sky130_vsdinv` cell was correctly placed and abutted with neighbouring standard cells:
 
@@ -763,11 +763,11 @@ def read picorv32a.def &
 
 Screenshot of placement def in Magic
 
-![Placement def in Magic](images/69_day4.17.png)
+![Placement def in Magic](images/layout.png)
 
 Screenshot of custom inverter inserted in placement def with proper abutment
 
-![Custom inverter in placement with abutment](images/70_day4.18.png)
+![Custom inverter in placement with abutment](images/.png)
 
 The `expand` command was used in tkcon to view internal connectivity layers:
 
@@ -775,7 +775,7 @@ The `expand` command was used in tkcon to view internal connectivity layers:
 expand
 ```
 
-![Custom inverter expanded to show connectivity](images/71_day4.19.png)
+![Custom inverter expanded to show connectivity](images/expand.png)
 
 ---
 
