@@ -568,29 +568,33 @@ These values feed into Liberty (`.lib`) files used by synthesis and STA tools th
 
 Using the Magic layout tool and the Sky130 technology rule file (`sky130A.tech`) to find and fix physical geometry violations.
 
-![Screenshot of poly rules](images/drc_testfiles.download.png)
+### met3 DRC Rules
 
-### Fixing the Incorrectly Implemented poly.9 Rule
+The met3 layout was loaded into Magic to observe existing DRC violations and understand the met3 spacing rules in the Sky130 PDK.
 
-![Screenshot of poly rules](images/met3layout.png)
+![Screenshot of met3 layout with DRC violations](images/met3layout.png)
 
-The `poly.9` rule defines the minimum spacing between a poly resistor and plain poly. In the original `sky130A.tech` file this rule was missing — meaning Magic would not flag a DRC violation even when the spacing was less than the required 0.48µm.
+Screenshot of Sky130 Periphery Rules for met3
 
 Link to Sky130 Periphery rules: https://skywater-pdk.readthedocs.io/en/main/rules/periphery.html
 
-![Screenshot of poly rules](images/YOUR_poly_rules.png)
+![Sky130 Periphery Rules](images/sky130rules.png)
 
-No DRC violation was flagged even though spacing was less than 0.48µm — confirming the rule was missing.
+The DRC violations were inspected using:
 
-![Incorrectly implemented poly.9 rule — no DRC violation](images/2met3.png)
+```tcl
+drc why
+```
 
-![Incorrectly implemented poly.9 rule — no DRC violation](images/3met3.png)
+![met3 DRC violations — count and description](images/2met3.png)
 
-The `sky130A.tech` file was opened and the missing spacing rules for `poly.9` were added covering `xhrpoly`, `uhrpoly`, and `xpc` to `allpolynonres` at 480nm spacing.
+![met3 DRC rule details](images/3met3.png)
 
-![Tech file edited to fix poly.9](images/4met3.png)
+The `sky130A.tech` file was opened and the met3 spacing rules were inspected and corrected.
 
-![poly.9 spacing rule added in tech file](images/5met3.png)
+![Tech file met3 rule section](images/4met3.png)
+
+![Tech file met3 rule fix](images/5met3.png)
 
 The updated tech file was reloaded inside Magic and a fresh DRC check was run:
 
@@ -602,9 +606,7 @@ drc why
 
 The DRC violation was now correctly flagged after the fix.
 
-![DRC violation correctly flagged after fix](images/finalmet3.png)
-
----
+![Final met3 DRC result after fix](images/finalmet3.png)
 
 ## Day 4 — Pre-Layout Timing Analysis and Clock Tree Synthesis
 
@@ -718,7 +720,7 @@ set ::env(EXTRA_LEFS)  [glob $::env(OPENLANE_ROOT)/designs/$::env(DESIGN_NAME)/s
 
 ![config.tcl updated](images/8stdeditedconfig.png)
 
-![config.tcl updated](images/beforestdsynth.png)
+![config.tcl verified](images/beforestdsynth.png)
 
 ---
 
@@ -789,7 +791,7 @@ Newly created pre_sta.conf for STA analysis in openlane directory
 
 Newly created my_base.sdc for STA analysis in openlane/designs/picorv32a/src directory based on the file openlane/scripts/base.sdc
 
-![my_base.sdc file](mybasesdc.png)
+![my_base.sdc file](images/mybasesdc.png)
 
 STA was run from inside the OpenLANE Docker container:
 
@@ -811,7 +813,7 @@ sta pre_sta.conf
 run_cts
 ```
 
-![CTS completed successfully](cts1.png)
+![CTS completed successfully](images/cts1.png)
 
 ![CTS result](images/cts2.png)
 
@@ -835,11 +837,10 @@ set_propagated_clock [all_clocks]
 report_checks -path_delay min_max -fields {slew trans net cap input_pins} -format full_clock_expanded -digits 4
 ```
 
-![Post-CTS timing report](images/openroad1.png)
+![Post-CTS timing report — hold path](images/openroad1.png)
 
-![Post-CTS setup path](images/openroad2.png)
+![Post-CTS timing report — setup path](images/openroad2.png)
 
-![Post-CTS hold path](images/openroad3.png)
+![Post-CTS slack met](images/openroad3.png)
 
-![Post-CTS hold path](images/openroad4.png)
-
+![Post-CTS clock skew report](images/openroad4.png)
