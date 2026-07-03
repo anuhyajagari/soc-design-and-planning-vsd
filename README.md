@@ -944,7 +944,7 @@ Screenshot of routed def in Magic
 
 ![Routed layout in Magic](images/routedef1.png)
 
-![Routed layout zoomed in](images/routedef2.png)
+![Routed layout zoomed in](images/routdef2.png)
 
 ---
 
