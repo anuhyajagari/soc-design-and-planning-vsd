@@ -844,3 +844,121 @@ report_checks -path_delay min_max -fields {slew trans net cap input_pins} -forma
 ![Post-CTS slack met](images/openroad3.png)
 
 ![Post-CTS clock skew report](images/openroad4.png)
+
+## Day 5 — Final RTL to GDSII using TritonRoute and OpenSTA
+
+### Topics Covered
+
+- Routing — Global vs Detailed
+- Power Distribution Network (PDN)
+- TritonRoute and Routing Strategy
+- SPEF Extraction and Post-Route STA
+- GDSII Generation
+
+---
+
+## Routing — Global vs Detailed
+
+Routing happens in two stages:
+
+- **Global Routing (FastRoute)** — divides the chip into routing regions and finds approximate paths for each net, respecting layer and congestion constraints
+- **Detailed Routing (TritonRoute)** — takes the global routing guides and assigns exact wire segments, vias, and metal tracks while strictly adhering to DRC rules
+
+The routing algorithm selects paths with the minimum number of bends, but this comes at the cost of longer runtime for complex designs.
+
+---
+
+## Power Distribution Network (PDN)
+
+In OpenLANE, PDN generation happens after CTS — unlike the conventional flow where it is done during floorplanning. The PDN creates:
+
+- **Power rings** around the core
+- **Vertical and horizontal power straps** on upper metal layers (met4, met5)
+- **met1 power rails** running through each standard cell row
+
+Upper metal layers are preferred for power distribution because they are wider and thicker, resulting in lower resistance and less IR drop.
+
+---
+
+## SPEF and Post-Route STA
+
+After routing completes, the actual wire parasitics (resistance and capacitance) are extracted into a **SPEF (Standard Parasitic Exchange Format)** file. These are back-annotated into the netlist and STA is re-run for final timing sign-off. This gives a more accurate picture of timing than pre-route analysis since real wire delays are now accounted for.
+
+---
+
+## Common Routing Violations
+
+- **Min spacing violations** — two wires too close on the same metal layer
+- **Antenna violations** — long metal segments accumulating charge during fabrication etch, which can damage gate oxide
+  - Fix: insert antenna diodes or use jumper vias to route to a higher metal layer temporarily
+
+---
+
+## Lab — PDN Generation and Routing
+
+### Generating the Power Distribution Network
+
+After CTS is complete, the PDN is generated inside the OpenLANE interactive flow:
+
+```bash
+gen_pdn
+```
+### Viewing the PDN Layout in Magic
+
+```bash
+cd ~/Desktop/OpenLane/designs/picorv32a/runs/RUN_2026.07.02_13.08.56/tmp/floorplan/
+magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.nom.lef def read 33-pdn.def &
+```
+
+Screenshot of PDN def
+
+![PDN layout in Magic](images/pdn1.png)
+
+![PDN layout zoomed in](images/pdn2.png)
+
+![PDN layout zoomed in](images/pdn3.png)
+
+---
+
+### Running Routing
+
+Routing was run with the default TritonRoute strategy (strategy 0):
+
+```bash
+run_routing
+```
+The TritonRoute strategy was confirmed as 0, ensuring 0 DRC violations after routing.
+
+---
+
+### Viewing the Routed Layout in Magic
+
+After routing completes, the final routed def can be opened in Magic:
+
+```bash
+cd ~/Desktop/OpenLane/designs/picorv32a/runs/RUN_2026.07.02_13.08.56/results/routing/
+magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.nom.lef def read picorv32a.def &
+```
+
+Screenshot of routed def in Magic
+
+![Routed layout in Magic](images/routedef1.png)
+
+![Routed layout zoomed in](images/routedef2.png)
+
+---
+
+### SPEF Extraction and Post-Route STA
+
+After routing, parasitics are extracted automatically by OpenLANE into a SPEF file. The final STA is then run to verify timing sign-off with actual wire parasitics included.
+
+---
+
+### Viewing the Final GDSII Layout
+
+The final GDSII file is generated automatically by OpenLANE after routing and sign-off steps complete. It can be viewed using Magic:
+
+```bash
+cd ~/Desktop/OpenLane/designs/picorv32a/runs/RUN_2026.07.02_13.08.56/results/signoff/
+magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech picorv32a.gds &
+```
