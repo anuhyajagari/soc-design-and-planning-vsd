@@ -568,8 +568,6 @@ These values feed into Liberty (`.lib`) files used by synthesis and STA tools th
 
 Using the Magic layout tool and the Sky130 technology rule file (`sky130A.tech`) to find and fix physical geometry violations.
 
-## Lab — Magic DRC Exercise
-
 ### met3 DRC Rules
 
 ![Screenshot of met3 layout with DRC violations](images/met3layout.png)
@@ -959,3 +957,34 @@ The final GDSII file is generated automatically by OpenLANE after routing and si
 cd ~/Desktop/OpenLane/designs/picorv32a/runs/RUN_2026.07.02_13.08.56/results/signoff/
 magic -T /home/vscode/.ciel/ciel/sky130/versions/0fe599b2afb6708d281543108caf8310912f54af/sky130A/libs.tech/magic/sky130A.tech picorv32a.gds &
 ```
+---
+
+## Key Learnings
+
+- Understood how a chip moves from RTL to a manufacturable GDSII file using a fully open-source toolchain
+- Got hands-on with floorplanning, placement, CTS, and routing for the `picorv32a` RISC-V core
+- Learned how to design, characterize and integrate a custom standard cell (`sky130_vsdinv`) into an existing OpenLANE flow
+- Gained practical experience with STA concepts — setup/hold slack, OCV, CRPR — using OpenSTA and OpenROAD
+- Understood how PDN generation, parasitic extraction and post-route SPEF analysis affect final timing sign-off
+
+---
+
+## Acknowledgements
+
+A huge thank you to **Kunal Ghosh** (Co-founder, VSD Corp. Pvt. Ltd.) and **Nickson P Jose** (Physical Design Engineer, Intel) for putting together such a well-structured and genuinely practical workshop. Running a real CPU from RTL to GDSII using nothing but open-source tools is something I didn't expect to be possible — and yet here we are.
+
+- **Kunal Ghosh** — Co-founder, VSD (VLSI System Design)
+- **Nickson Jose** — for the `vsdstdcelldesign` repository used in Day 3 labs
+- **Tim Edwards** — Creator and maintainer of the Magic VLSI layout tool
+- **NASSCOM** — for facilitating this workshop program
+- **efabless & Google** — for the OpenLANE flow and Sky130 open-source PDK
+
+---
+
+## References
+
+- [VSD SoC Design Workshop](https://vsdsquadron.vlsisystemdesign.com)
+- [OpenLANE GitHub](https://github.com/The-OpenROAD-Project/OpenLane)
+- [SkyWater Sky130 PDK](https://skywater-pdk.readthedocs.io)
+- [vsdstdcelldesign](https://github.com/nickson-jose/vsdstdcelldesign) — Custom inverter cell by Nickson Jose
+- [Magic VLSI Tool](http://opencircuitdesign.com/magic)
