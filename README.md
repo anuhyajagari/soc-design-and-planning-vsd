@@ -568,13 +568,11 @@ These values feed into Liberty (`.lib`) files used by synthesis and STA tools th
 
 Using the Magic layout tool and the Sky130 technology rule file (`sky130A.tech`) to find and fix physical geometry violations.
 
+## Lab — Magic DRC Exercise
+
 ### met3 DRC Rules
 
-The met3 layout was loaded into Magic to observe existing DRC violations and understand the met3 spacing rules in the Sky130 PDK.
-
 ![Screenshot of met3 layout with DRC violations](images/met3layout.png)
-
-Screenshot of Sky130 Periphery Rules for met3
 
 Link to Sky130 Periphery rules: https://skywater-pdk.readthedocs.io/en/main/rules/periphery.html
 
@@ -586,17 +584,13 @@ The DRC violations were inspected using:
 drc why
 ```
 
-![met3 DRC violations — count and description](images/2met3.png)
+![met3 DRC violations](images/2met3.png)
 
 ![met3 DRC rule details](images/3met3.png)
-
-The `sky130A.tech` file was opened and the met3 spacing rules were inspected and corrected.
 
 ![Tech file met3 rule section](images/4met3.png)
 
 ![Tech file met3 rule fix](images/5met3.png)
-
-The updated tech file was reloaded inside Magic and a fresh DRC check was run:
 
 ```tcl
 tech load sky130A.tech
@@ -604,10 +598,13 @@ drc check
 drc why
 ```
 
-The DRC violation was now correctly flagged after the fix.
-
 ![Final met3 DRC result after fix](images/finalmet3.png)
 
+### Fixing the Incorrectly Implemented poly.9 Rule
+
+The `poly.9` rule defines the minimum spacing between a poly resistor and plain poly. In the original `sky130A.tech` file this rule was missing.
+
+The `sky130A.tech` file was edited to add the missing spacing constraint and reloaded in Magic to verify the fix was correctly flagged.
 ## Day 4 — Pre-Layout Timing Analysis and Clock Tree Synthesis
 
 ### Topics Covered
