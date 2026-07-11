@@ -2,6 +2,28 @@
 
 RTL-to-GDSII Physical Design Flow using OpenLane and Sky130 PDK.
 
+## 📌 Project Summary
+
+End-to-end **RTL-to-GDSII physical design implementation** of the **picorv32a RISC-V core** using **OpenLANE** and the **SkyWater SKY130 PDK**. This project covers the complete ASIC physical design flow, including synthesis, floorplanning, placement, clock tree synthesis, routing, physical verification, and GDSII generation. It also includes the **full custom standard cell design flow**—from layout creation and SPICE characterization to LEF generation and integration into the OpenLANE synthesis flow.
+
+**Status:** Successfully completed the complete RTL-to-GDSII implementation and custom standard cell integration flow.
+
+**Flow Covered:**
+Synthesis → Floorplanning → PDN Generation → Placement → Custom Standard Cell Design & Characterization → LEF Integration → Library Integration → CTS → STA → Routing → DRC → LVS → GDSII
+
+| **Category** | **Details** |
+|---|---|
+| **Design** | picorv32a (RISC-V Core) |
+| **Technology** | SkyWater SKY130 (130nm) Open PDK |
+| **Physical Design Flow** | RTL → Netlist → Floorplan → PDN → Placement → CTS → Routing → Signoff |
+| **Custom Standard Cell** | Designed a SKY130 CMOS inverter in Magic, performed SPICE extraction, post-layout ngspice characterization, generated LEF, and integrated it into the OpenLANE flow |
+| **Library Integration** | Added custom LEF/library, updated synthesis configuration, and validated timing using OpenSTA |
+| **Physical Verification** | DRC verification in Magic, fixed the SKY130 `poly.9` spacing rule, and performed LVS using Netgen |
+| **Design Analysis** | Calculated synthesis statistics including **10.23% flop ratio**, analyzed floorplan, placement, CTS, timing, and routing reports |
+| **Final Deliverable** | Successfully generated a verified GDSII layout |
+
+**EDA Tools:** OpenLANE • OpenROAD • Yosys • OpenSTA • Magic • Netgen • ngspice
+
 ## Digital VLSI SoC Design and Planning — RTL to GDSII
 
 This repository contains my notes, lab exercises, screenshots, and learnings from the Digital VLSI SoC Design and Planning Workshop conducted by VSD (VLSI System Design).
@@ -9,19 +31,6 @@ This repository contains my notes, lab exercises, screenshots, and learnings fro
 ---
 
 ## Day 1 — Introduction to Open-Source EDA, OpenLANE and Sky130 PDK
-
-### Topics Covered
-
-* Introduction to ASIC Design Flow
-* Understanding Chip Components
-* RISC-V ISA Basics
-* RTL to GDSII Flow
-* Open-Source EDA Ecosystem
-* Introduction to Sky130 PDK
-* OpenLANE ASIC Flow
-* Hands-on Synthesis using OpenLANE
-
----
 
 ## Where is a Chip Located & Understanding its Components
 
